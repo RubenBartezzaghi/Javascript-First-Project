@@ -5,78 +5,160 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #startGame{
+            margin-top: 20vh;
+            display: flex;
+            justify-content: center;
+        }
+        .button{
+            padding: 35px;            
+            border-radius: 8px;
+            border: 1px; 
+            border-style: solid;
+            border-color: black;
+        }
+        #main{
+            display: flex;
+            flex-direction: column; 
+            align-content: center;          
+            gap: 20vh;
+            margin: 10vh;
+        }
+        .displayer{
+            display: flex;
+            justify-content: space-around;
+        }
+        .pointCount{
+            display: flex;
+            justify-content: center;
+            font-size: 48px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
 </head>
 <body>
+    <div id="main"></div>
+    <div id="startGame">Click here to start a game</div>
     <script>
-        
-        let playerSelection = "blank";
-        let computerSelection = "blank";
-        function getComputerChoice(max) {
-            let x = (Math.random()*max); 
-            let xInt = parseInt(x);
-            if (xInt===0) {
-                return "scissor";
+        document.getElementById("startGame").addEventListener("click", game)
+        function game() {
+            document.getElementById("startGame").style.display = "none";
+            document.getElementById("main").style.display = "flex"
+            alert("You're gonna be playing Rock, Paper, Scissor against the computer")
+
+            ///create a display for the three buttons
+            let display = document.createElement("div");
+                display.classList.add("displayer")
+                display.style.display = "flex";
+                document.getElementById("main").append(display)
+
+            ///create each button analogously
+
+            let rockButton = document.createElement("div");
+                rockButton.classList.add("button");
+                rockButton.innerHTML = "Rock"
+                display.append(rockButton);
+
+            let paperButton = document.createElement("div");
+                paperButton.classList.add("button");
+                paperButton.innerHTML = "Paper"
+                display.append(paperButton);
+
+            let scissorButton = document.createElement("div");
+                scissorButton.classList.add("button");
+                scissorButton.innerHTML = "Scissor"
+                display.append(scissorButton);
+
+            let buttons = document.getElementsByClassName("button")
+
+            for (let i=0; i<buttons.length; i++) {
+                buttons[i].addEventListener("click",play1Round)
             }
-            else if (xInt===1) {
-                return "rock";
-            }
-            else if (xInt===2) {
-                return "paper";
-            }
-            else {
-                return "system error";
-            }
-        }    
-        
-        function play1Round (playerSelection,computerSelection) {            
-            let choice = playerSelection.toLowerCase();
-            if (choice == computerSelection) {
-                alert("It's a draw");
-                return 1 ;
-            }
-            else if ((choice !== "rock") && (choice !== "scissor") && (choice !== "paper")) {
-                alert("Invalid value!!!");
-            }
-            else {
-                if ((choice == "rock") && (computerSelection == "scissor")) {
-                    alert("you won!");
-                    return 2;
+
+            let pointCount = document.createElement("div")
+                pointCount.classList.add("pointCount")                
+                let You = 0
+                let CPU = 0
+                pointCount.innerHTML = `YOU`+` `+`${You}`+` `+` `+` `+`CPU`+` `+`${CPU}`
+                document.getElementById("main").appendChild(pointCount)
+            
+            ///create a function that looks at which button is being clicked and uses that to play 
+            ///one round against the PC
+            function play1Round (event) {            
+                
+                let choice = event.target.innerHTML.toLowerCase(); ///extract the innerHTML ad convert it to lowercase
+                let computerSelection = getComputerChoice();       ///create a random choice for the CPU 
+
+                if (choice == computerSelection) {
+                    alert("It's a draw");
+
+                    
                 }
-                else if ((choice == "scissor") && (computerSelection == "paper")) {
-                    alert("you won!");
-                    return 2;let counter = 0;
-                }
-                else if ((choice == "paper") && (computerSelection == "rock")) {
-                    alert("you won!");
-                    return 2;
+                else if ((choice !== "rock") && (choice !== "scissor") && (choice !== "paper")) {
+                    alert("Invalid value!!!");
                 }
                 else {
-                    alert("you lose!")
-                    return 0;
+                    if ((choice == "rock") && (computerSelection == "scissor")) {
+                        alert("you won!");
+                        You += 1;
+                    }
+                    else if ((choice == "scissor") && (computerSelection == "paper")) {
+                        alert("you won!");
+                        You += 1;
+                    }
+                    else if ((choice == "paper") && (computerSelection == "rock")) {
+                        alert("you won!");
+                        You += 1;
+                    }
+                    else {
+                        alert("you lose!");
+                        CPU += 1
+                        
+                    }
+                }
+                pointCount.innerHTML = `YOU`+` `+`${You}` +` `+`CPU`+` `+`${CPU}`
+                check();
+                
+            }
+
+            ///get the CPU random choice
+            function getComputerChoice() {
+                let x = (Math.random()*2); 
+                let xInt = parseInt(x);
+                if (xInt===0) {
+                    return "scissor";
+                }
+                else if (xInt===1) {
+                    return "rock";
+                }
+                else if (xInt===2) {
+                    return "paper";
+                }
+                else {
+                    return "system error";
+                }
+            }    
+            
+            ///add a fucntion that checks for points and declares the winner if at least one reaches 5 points.
+            ///In that case end the game and declare the winner
+            function check () {
+                if (You == 5 || CPU == 5) {
+                    if (You == 5) {alert(`You won 5 to `+ `${CPU}`+`!!!`)}
+                    else if (You == 5 && CPU == 5) {alert("Its a 5 to 5 draw!!!")}
+                    else {alert(`You lost `+`${You}`+ `to 5!!!`)}
+                    endGame();
                 }
             }
+            ///Function to end the game
+            function endGame() {
+                document.getElementById("main").style.display = "none"
+                document.getElementById("startGame").style.display = "block"
+            }
+
 
         }
-        function Game() {
-            let counter = 0;
-            for (i=0; i<5; i++){            
-                playerSelection = prompt("Type rock, paper or scissor");
-                let computerSelection = getComputerChoice(3);                
-                counter = counter + play1Round(playerSelection,computerSelection);            
-            };    
-            if (counter === 5) {
-                alert("It's a dead draw")
-            }
-            else if (counter < 5) {
-                alert("It's a crushing defeat")
-            }
-            else {
-                alert("It's a brilliant victory")
-            }
-            
-
-        }
-        Game();
+        
     </script>
 </body>
 </html>
